@@ -1,17 +1,21 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Search } from "react-bootstrap-icons";
-
+import LoaderPage from "./components/Loader";
 export default function App() {
   const [data, setData] = useState([]);
   const [searchText, setSearchText] = useState("");
   const [searchValue, setSearchValue] = useState("capital");
+  const [loader, setLoader] = useState(false);
 
   useEffect(() => {
+    setLoader(true);
+
     axios
       .get("https://restcountries.com/v2/all")
       .then((res) => {
         setData(res.data);
+        setLoader(false);
       })
       .catch((err) => console.log(err));
   }, []);
@@ -36,77 +40,88 @@ export default function App() {
   });
 
   return (
-    <div>
-      <nav className="navbar bg-light sticky-top">
-        <div className="container-fluid d-flex justify-content-center align-items-center ">
-          <div className="d-flex justify-content-center align-items-center  ">
-            <div>
-              <button
-                onClick={() => setSearchValue("capital")}
-                type="button"
-                className="btn btn-dark me-2"
-              >
-                Search By Capital
-              </button>
-              <button
-                onClick={() => setSearchValue("name")}
-                type="button"
-                className="btn btn-dark ms-2"
-              >
-                Search By Name
-              </button>
-            </div>
-            <div className="d-flex flex-row align-items-center m-4 border rounded border border-dark">
-              <Search className="ms-3" />
+    <>
+      {loader ? (
+        <LoaderPage />
+      ) : (
+        <div>
+          <div style={{marginTop: 102}}>
+            <nav
+              className="navbar bg-light "
+              style={{ width: "100%" }}
+            >
+              <div className="container-fluid d-flex justify-content-center align-items-center ">
+                <div className="d-flex justify-content-center align-items-center  ">
+                  <div>
+                    <button
+                      onClick={() => setSearchValue("capital")}
+                      type="button"
+                      className="btn btn-dark me-2"
+                    >
+                      Search By Capital
+                    </button>
+                    <button
+                      onClick={() => setSearchValue("name")}
+                      type="button"
+                      className="btn btn-dark ms-2"
+                    >
+                      Search By Name
+                    </button>
+                  </div>
+                  <div className="d-flex flex-row align-items-center m-4 border rounded border border-dark">
+                    <Search className="ms-3" />
 
-              <input
-                onChange={(e) => setSearchText(e.target.value)}
-                type="text"
-                className="form-control border-0"
-                placeholder={
-                  searchValue === "capital"
-                    ? "Search By Capital"
-                    : "Search By Name"
-                }
-              />
-            </div>
+                    <input
+                      onChange={(e) => setSearchText(e.target.value)}
+                      type="text"
+                      className="form-control border-0"
+                      placeholder={
+                        searchValue === "capital"
+                          ? "Search By Capital"
+                          : "Search By Name"
+                      }
+                    />
+                  </div>
+                </div>
+              </div>
+            </nav>
           </div>
+
+          <table className="table">
+            <thead>
+              <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Capital</th>
+                <th scope="col">Region</th>
+                <th scope="col">Flag</th>
+              </tr>
+            </thead>
+            <tbody>
+              {searchItems.map((country) => {
+                return (
+                  <>
+                    <tr key={country.name}>
+                      <td> {country.name} </td>
+
+                      <td> {country.capital} </td>
+
+                      <td> {country.region} </td>
+                      <td>
+                        {" "}
+                        <img
+                          src={country.flag}
+                          alt={country.name}
+                          style={{ maxWidth: 100 }}
+                        />{" "}
+                      </td>
+                    </tr>
+                  </>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
-      </nav>
-
-      <table className="table">
-        <thead>
-          <tr>
-            <th scope="col">Name</th>
-            <th scope="col">Capital</th>
-            <th scope="col">Region</th>
-            <th scope="col">Flag</th>
-          </tr>
-        </thead>
-        <tbody>
-          {searchItems.map((country) => {
-            return (
-              <>
-                <tr key={country.name}>
-                  <td> {country.name} </td>
-
-                  <td> {country.capital} </td>
-
-                  <td> {country.region} </td>
-                  <td>
-                    {" "}
-                    <img
-                      src={country.flag}
-                      alt={country.name}
-                      style={{ maxWidth: 100 }}
-                    />{" "}
-                  </td>
-                </tr>
-              </>
-            );
-          })}
-        </tbody>
-      </table>
-    </div>
+      )}
+    </>
   );
 }

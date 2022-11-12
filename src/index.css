@@ -21,3 +21,9 @@ input[type = text]:focus {
   border: none;
   box-shadow: none;
  }
+
+ .navbar {
+  position: fixed !important;
+  top: 0px;
+  width: 100%;
+}
